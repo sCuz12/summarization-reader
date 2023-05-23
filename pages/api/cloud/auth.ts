@@ -46,9 +46,7 @@ export class SupabaseService {
             return data;
 
         } catch (error: any) {
-            console.log(error.message);
-            throw new Error(error.message)
-         
+            throw new Error(error)
         }
 
     }

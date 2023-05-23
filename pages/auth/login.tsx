@@ -50,9 +50,8 @@ const Login = (props: Props) => {
                     router.push("/");
                 }, 400)
             } else {
-
-                const errorMessage = data.message;
-                setErrorMessage(errorMessage);
+                console.log(data)
+                setErrorMessage(data.message);
             }
      
         } catch (error:any) {
