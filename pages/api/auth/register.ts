@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { SupabaseService } from '../cloud/auth';
+import { passwordsMatchValidator } from '../utils/functions';
 
 
 type RegisterData = {
@@ -23,7 +24,13 @@ export default async function handler(
         return;
     }
     
-    const { email, password } = req.body;
+    const { email, password,confirmPassword } = req.body;
+
+    const passwordMatched = passwordsMatchValidator(password,confirmPassword);
+    
+    if(!passwordMatched) {
+        return res.status(500).json({ message: 'Password not matching' }); 
+    }
 
     try {
         const supabaseService = new SupabaseService()
