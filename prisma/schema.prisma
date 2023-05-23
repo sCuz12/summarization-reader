@@ -10,16 +10,15 @@ datasource db {
 }
 
 model User {
-  id        Int            @id @default(autoincrement())
-  name      String
+  id        String        @id @default(uuid())
   email     String         @unique
-  contents  ContentGenerated[]
+  contents  ContentGenerated[] 
 }
 
 model ContentGenerated {
   id         Int      @id @default(autoincrement())
-  title      String
   content    String
-  userId     Int
+  userId     String
   user       User     @relation(fields: [userId], references: [id])
+  audio_url String
 }

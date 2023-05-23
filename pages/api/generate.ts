@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import fetch from 'node-fetch'; 
+import { PrismaClient } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import dotenv from 'dotenv';
 const voice = require('elevenlabs-node');
@@ -7,6 +7,7 @@ import AWS from 'aws-sdk';
 import { AWSFileUploader, AWS_OBJECT } from './cloud/aws-file-uploader';
 import fs from 'fs'
 import { generateName } from './utils/functions';
+import path from 'path';
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ type Data = {
 // Create an instance of the S3 service
 const s3 = new AWS.S3();
 const BUCKET_NAME = "readitforme"
-import path from 'path';
+const prisma = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,11 +29,12 @@ export default async function handler(
   const API_KEY = process.env.ELEVENLABS_API;
 
   if(req.method = 'POST'){
-    const text = req.body
-    const fileName = generateName();
+    const {input,userId} = req.body
 
+    const fileName = generateName();
+    
     //NOTE: TextToSpeech saves the file as well
-    voice.textToSpeech(API_KEY,'21m00Tcm4TlvDq8ikWAM',fileName,text)
+    voice.textToSpeech(API_KEY,'21m00Tcm4TlvDq8ikWAM',fileName,input)
     
     .then(async (res: any)=>{
       let aws_s3_url = "" ;
@@ -48,6 +50,16 @@ export default async function handler(
           console.log(`File uploaded successfully. S3 path: ${s3Object.path}`)
           console.log(s3Object.url);
           aws_s3_url = s3Object.url
+          //Create a new record in the ContentGenerated table
+          return prisma.contentGenerated.create({
+            data: {
+              content: input,
+              audio_url : aws_s3_url,
+              user: {
+                connect: { id: userId }, // Assuming you have the userId
+              },
+            },
+          });
         })
         .catch((error:any)=>{
           console.log('Error uploading file:', error)

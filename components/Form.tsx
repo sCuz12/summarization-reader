@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState,useContext } from 'react'
+import { Context } from '../context';
+import {User} from '../types/user';
 
 type Props = {}
 
 const Form = (props: Props) => {
     const [input,setInput] = useState<string>('');
+    const {state} = useContext(Context)
 
+   
+    const user: User = state.user ?? {}; 
+  
     
     const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -14,7 +20,10 @@ const Form = (props: Props) => {
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify(input),
+              body: JSON.stringify({
+                input,
+                userId: user!.id,
+              }),
             });
             console.log(response);
         }catch(error) {
