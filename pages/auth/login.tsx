@@ -43,11 +43,11 @@ const Login = (props: Props) => {
                 // Update the user and token in the context
                 dispatch({ type: "LOGIN", payload: user });
                 //save token to local storage
-                localStorage.setItem("token", JSON.stringify(user));
+                localStorage.setItem("user", JSON.stringify(user));
                 
                 setSuccessMessage(true);
                 setTimeout(() => {
-                    router.push("/auth/login");
+                    router.push("/");
                 }, 400)
             } else {
 

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Context } from '../../context';
 
 type Props = {}
@@ -8,19 +8,25 @@ const withAuth = (WrappedComponent: React.ComponentType<any>) => {
     // eslint-disable-next-line react/display-name
     return (props:any) => {
         const router = useRouter();
+        const [isLoading, setIsLoading] = useState(true);
 
         const { state } = useContext(Context); // Retrieve authentication state from the context
         const { user } = state;
+        
         console.log(user);
 
         useEffect(() => {
-            if (!user) {
+            if (user === null && !isLoading) {
               // Redirect the user to the login page if not authenticated
               router.push('/auth/login');
             }
-        }, []);
+        }, [user,isLoading]);
 
-        if (!useContext) {
+        useEffect(() => {
+            setIsLoading(false); // Mark initial loading as complete after the first render
+          }, []);
+
+        if (!user) {
             return null; // Show a loading spinner or custom message while checking authentication
         }
 
