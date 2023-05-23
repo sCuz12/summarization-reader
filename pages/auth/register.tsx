@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import SucessMessage from '../../components/MessagesBox/SucessMessage';
 import { useRouter } from 'next/router';
+import ErrorMessage from '../../components/MessagesBox/ErrorMessage';
 
 type Props = {}
 
 const Register = (props: Props) => {
   const router = useRouter();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
 
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       console.log("sending request");
       const response = await fetch('/api/auth/register', {
@@ -26,19 +28,39 @@ const Register = (props: Props) => {
         },
         body: JSON.stringify({ email, password }),
       });
-      setSuccessMessage(true);
-      setTimeout(()=>{
-        router.push("/auth/login");
-      },400 )
+
+      const data = await response.json();
+
+      if (response.status == 200) {
+        setSuccessMessage(true);
+        setTimeout(() => {
+          router.push("/auth/login");
+        }, 400)
+      } else {
+        const errorMessage = data.message;
+        setErrorMessage(errorMessage);
+      }
+
     } catch (error) {
       console.log(error);
     }
   }
 
+
+  /*=============HANDLERS============== */
   const emailChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   }
 
+  const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(event.target.value)
+    setPasswordMatch(event.target.value === password);
+  }
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value)
+    setPasswordMatch(event.target.value === confirmPassword);
+  }
 
   useEffect(() => {
     // Enable the submit button if both email and password are not empty
@@ -71,17 +93,23 @@ const Register = (props: Props) => {
 
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium">Password</label>
-            <input onChange={event => setPassword(event.target.value)} type="password" className="border text-sm rounded-lg block w-full p-2.5" />
+            <input onChange={handlePasswordChange} type="password" className="border text-sm rounded-lg block w-full p-2.5" />
           </div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium">Confirm password</label>
-            <input onChange={event => setConfirmPassword(event.target.value)} type="password" className="border text-sm rounded-lg block w-full p-2.5" />
+            <input onChange={handleConfirmPasswordChange} type="password" className="border text-sm rounded-lg block w-full p-2.5" />
           </div>
           {successMessage && (
             <div className='flex items-center justify-center w-full'>
               <SucessMessage message='Register Succesfully' />
             </div>
+          )}
+          {!passwordMatch && (
+            <ErrorMessage message='Passwords do not match' />
+          )}
 
+          {errorMessage && (
+            <ErrorMessage message={errorMessage}/>
           )}
 
         </div>

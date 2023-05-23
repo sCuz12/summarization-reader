@@ -18,16 +18,13 @@ export class SupabaseService {
                 password: password
             });
 
-            console.log(data);
             if (error) {
-                console.log(error);
                 throw new Error(error.message);
             }
             // Successful registration
             return data.user;
         } catch (error: any) {
-            console.log(error)
-            return false
+            throw new Error(error.message)
         }
 
     }

@@ -9,7 +9,7 @@ type RegisterData = {
   
 
 type ErrorResponse = {
-    error: string;
+    message: string;
 };
   
 
@@ -19,7 +19,7 @@ export default async function handler(
   ) {
 
     if (req.method !== 'POST') {
-        res.status(405).json({ error: 'Method Not Allowed' });
+        res.status(405).json({ message: 'Method Not Allowed' });
         return;
     }
     
@@ -30,7 +30,7 @@ export default async function handler(
         const user            = await supabaseService.register(email,password)
 
         if(!user){
-            return res.status(500).json({ error: 'Error registering user' });
+            return res.status(500).json({ message: 'Error registering user' });
         }
 
         res.status(200).json({
@@ -38,8 +38,7 @@ export default async function handler(
             user: user
         });
     }catch(error:any){
-        console.log(error.message);
-        res.status(500).json({ error: error.message});
+        res.status(500).json({ message: error.message});
     }
 
   }
