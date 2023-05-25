@@ -11,7 +11,7 @@ export interface AWS_OBJECT {
 }
 
 export class AWSFileUploader {
-    private S3_URL = "https://readitforme.s3.eu-north-1.amazonaws.com/"
+    private S3_URL = process.env.AWS_UPLOAD_URL;
     private client: S3Client;
     private readonly bucketName = s3Config.bucketName;
     private accessKeyId = process.env.AWS_ACCESS_KEY;

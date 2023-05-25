@@ -17,6 +17,7 @@ export class SupabaseService {
                 email: email,
                 password: password
             });
+            thi
 
             if (error) {
                 throw new Error(error.message);
