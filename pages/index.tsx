@@ -7,6 +7,7 @@ import withAuth from './hoc/withAuth'
 import { ContentData } from '../types/user'
 import { use, useEffect, useState } from 'react'
 import { User } from '../types/user'
+import PlayerCard from '../components/Cards/PlayerCard'
 
 interface HomeProps {
   userID: string,
@@ -74,12 +75,15 @@ const Home: NextPage = () => {
 
         <Form />
 
-        <div className=''>
+        <div className='py-8'>
+          <div className='grid grid-cols-1 gap-4'>
           {content && (
             content.map((item) => (
-              <p key={item.content}>{item.audio_url}</p>
+              <PlayerCard key={item.content} title = {item.content} audio_url={item.audio_url}/>
             ))
           )}
+          </div>
+         
         </div>
 
       </main>
