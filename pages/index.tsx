@@ -78,8 +78,8 @@ const Home: NextPage = () => {
         <div className='py-8'>
           <div className='grid grid-cols-1 gap-4'>
           {content && (
-            content.map((item) => (
-              <PlayerCard key={item.content} title = {item.content} audio_url={item.audio_url}/>
+            content.map((item,index) => (
+              <PlayerCard index={index} key={item.content} title = {item.content} audio_url={item.audio_url}/>
             ))
           )}
           </div>
