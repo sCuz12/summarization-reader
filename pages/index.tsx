@@ -79,7 +79,7 @@ const Home: NextPage = () => {
           <div className='grid grid-cols-1 gap-4'>
           {content && (
             content.map((item,index) => (
-              <PlayerCard index={index} key={item.title} title = {item.title} audio_url={item.audio_url}/>
+              <PlayerCard data = {item} key={index}/>
             ))
           )}
           </div>
