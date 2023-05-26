@@ -10,17 +10,21 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(uuid())
-  email     String         @unique
-  contents  ContentGenerated[] 
+  id       String             @id @default(uuid())
+  email    String             @unique
+  contents ContentGenerated[]
 }
 
 model ContentGenerated {
-  id         Int      @id @default(autoincrement())
-  content    String
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  audio_url String
-  createdAt  DateTime             @default(now())
-  updatedAt  DateTime             @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String?
+  image       String?
+  source      String?
+  content     String?
+  content_url String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  audio_url   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

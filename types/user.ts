@@ -6,6 +6,10 @@ export interface User {
 }
 
 export type ContentData = {
-    content: string,
     audio_url: string,
+    title: string
+    image: string
+    source: string
+    content: string
+    content_url : string,
 }

@@ -8,6 +8,7 @@ import { AWSFileUploader, AWS_OBJECT } from './cloud/aws-file-uploader';
 import fs from 'fs'
 import { generateName } from './utils/functions';
 import path from 'path';
+import { scrapeUrl } from "./utils/scrapper";
 
 dotenv.config();
 
@@ -29,12 +30,22 @@ export default async function handler(
   const API_KEY = process.env.ELEVENLABS_API;
 
   if(req.method = 'POST'){
-    const {input,userId} = req.body
+    const {url,userId} = req.body
 
-    const fileName = generateName();
+    const fileName = generateName();  
+    
+    const scrapeData = await scrapeUrl(url)
+    if(scrapeData) {
+      var moreData = {
+        title : scrapeData.ogTitle,
+        image : scrapeData.ogImage[0].url,
+        source : scrapeData.ogSiteName,
+        content_url : scrapeData.ogUrl,
+      }
+    }
     
     //NOTE: TextToSpeech saves the file as well
-    voice.textToSpeech(API_KEY,'21m00Tcm4TlvDq8ikWAM',fileName,input)
+    voice.textToSpeech(API_KEY,'21m00Tcm4TlvDq8ikWAM',fileName,'test')
     
     .then(async (res: any)=>{
       let aws_s3_url = "" ;
@@ -53,7 +64,7 @@ export default async function handler(
           //Create a new record in the ContentGenerated table
           return prisma.contentGenerated.create({
             data: {
-              content: input,
+              ...moreData,
               audio_url : aws_s3_url,
               user: {
                 connect: { id: userId }, // Assuming you have the userId

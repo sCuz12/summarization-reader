@@ -5,7 +5,7 @@ import {User} from '../types/user';
 type Props = {}
 
 const Form = (props: Props) => {
-    const [input,setInput] = useState<string>('');
+    const [url,setUrl] = useState<string>('');
     const {state} = useContext(Context)
 
    
@@ -21,7 +21,7 @@ const Form = (props: Props) => {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                input,
+                url,
                 userId: user!.id,
               }),
             });
@@ -38,7 +38,7 @@ const Form = (props: Props) => {
                 <div className='flex flex-col justify-between gap-12'>
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enter url</label>
-                        <input onChange={event=>setInput(event.target.value)} type="text" id="last_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Doe" required />
+                        <input onChange={event=>setUrl(event.target.value)} type="text" id="last_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Doe" required />
                     </div>
                     <button type="submit" className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
                         Submit

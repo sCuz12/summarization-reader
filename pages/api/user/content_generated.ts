@@ -19,8 +19,12 @@ export default async function handler(
         } ,
         select: {
             id: true,
-            content: true,
+            title: true,
             audio_url: true,
+            content : true ,
+            content_url: true,
+            source : true,
+            image:true,
         },
       })
 
