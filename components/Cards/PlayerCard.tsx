@@ -1,7 +1,8 @@
-import Image from 'next/image'
 import React, { useRef, useState, useEffect } from 'react'
 import { FaRegPlayCircle, FaPauseCircle } from 'react-icons/fa'
 import { ContentData } from '../../types/user'
+import { Badge, Card, Group, Text, Image, Divider, Center } from '@mantine/core'
+import FullItemImageExpand from './FullItemImageExpand';
 
 type Props = {
     data: ContentData
@@ -10,7 +11,8 @@ type Props = {
 
 const PlayerCard = (props: Props) => {
     const [isPaused, setIspaused] = useState(true)
-    const audioRef = useRef<HTMLAudioElement>(null)
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [showFullImage, setshowFullImage] = useState(false);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -22,37 +24,51 @@ const PlayerCard = (props: Props) => {
         }
     }, [isPaused]);
 
+    const handleImageClicked = (event: any, value: boolean): void => {
+        event.stopPropagation();
+        setshowFullImage(value);
+    };
+
+
     return (
-        <div className='rounded bg-slate-200 w-80 h-28 rounded-xl'>
+        <Card shadow={'xl'} pt={0} pb={'md'} radius={20} withBorder className='max-w-[400px] relative' >
             <div>
                 <audio ref={audioRef} src={props.data.audio_url} onEnded={e => { setIspaused(true) }}>
-
                 </audio>
             </div>
-            <div className='flex flex-col items-center gap-4'>
-                <div className='flex justify-center w-full pt-4 font-bold'>{props.data.title}</div>
-                <div className='flex w-full'>
-                    {props.data.image && (
-                        <div className='flex w-1/4 pl-8'>
-                            <Image src={props.data.image!} alt={props.data.title!} width={120} height={120} />
+
+            <Card.Section>
+                {props.data.image && props.data.title && (
+                    <Image alt={props.data.title} src={props.data.image} height={100} />
+                )}
+            </Card.Section>
+
+            <Group position="apart" mt="md" mb="xs">
+                <Text weight={500}>{props.data.title}</Text>
+                <Badge color='pink' variant='light'>
+                    {props.data.source}
+                </Badge>
+            </Group>
+
+            <Group mt="md">
+                <Text size="sm" color="dimmed">
+                    <div className='flex'>
+                        <div className='flex w-3/5'>
+                            {props.data.content?.substring(0, 70) + "..."}
                         </div>
-                    )}
-
-                    <div className='flex justify-end w-3/4'>
-                        {isPaused ? (
-                            <FaRegPlayCircle onClick={e => setIspaused(!isPaused)} size={40} />
-                        ) : (
-                            <FaPauseCircle onClick={e => setIspaused(!isPaused)} size={40} />
-                        )
-                        }
+                        <div className='flex justify-center w-2/5'>
+                            {isPaused ? (
+                                <FaRegPlayCircle onClick={e => setIspaused(!isPaused)} size={40} />
+                            ) : (
+                                <FaPauseCircle onClick={e => setIspaused(!isPaused)} size={40} />
+                            )
+                            }
+                        </div>
                     </div>
+                </Text>
+            </Group>
 
-                </div>
-
-            </div>
-
-
-        </div>
+        </Card>
 
     )
 }
