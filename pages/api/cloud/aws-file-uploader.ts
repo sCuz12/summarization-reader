@@ -40,8 +40,6 @@ export class AWSFileUploader {
 
         const response = this.client.send(command);
       
-
-
         return {
             path : `${this.bucketName}/${filename}`,
             url  : this.S3_URL + `${filename}`

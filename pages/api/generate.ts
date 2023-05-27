@@ -51,7 +51,7 @@ export default async function handler(
         max_tokens: 200,
         n: 1, // Generate a single response
       });
-    
+
       aiAnswer = completion.data.choices[0].text
 
     } catch (error: any) {
@@ -67,29 +67,42 @@ export default async function handler(
         image: scrapeData.ogImage[0].url,
         source: scrapeData.ogSiteName,
         content_url: scrapeData.ogUrl,
-        content : aiAnswer
+        content: aiAnswer
       }
     }
 
     //NOTE: TextToSpeech saves the file as well
     voice.textToSpeech(API_KEY, '21m00Tcm4TlvDq8ikWAM', fileName, aiAnswer)
-
       .then(async (res: any) => {
         let aws_s3_url = "";
         const fileUploader = new AWSFileUploader();
+        const rootDirectory = path.resolve(process.cwd()); // Get the root directory of the project
+        const filePath = path.join(rootDirectory, fileName);
 
-        setTimeout(async () => {
-          const rootDirectory = path.resolve(process.cwd()); // Get the root directory of the project
-          const filePath = path.join(rootDirectory, fileName);
+        const waitForFile = new Promise<void>((resolve) => {
+          const checkFile = () => {
+            fs.promises.stat(filePath)
+              .then(() => {
+                resolve();
+              })
+              .catch(() => {
+                setTimeout(checkFile, 1000); // Retry after 1 second
+              });
+          };
+          checkFile();
+        });
+
+
+
+        waitForFile.then(async () => {
           const fileContent = await fs.promises.readFile(filePath);
-
           fileUploader.uploadFile(fileContent, fileName)
             .then((s3Object: AWS_OBJECT) => {
               console.log(`File uploaded successfully. S3 path: ${s3Object.path}`)
-              console.log(s3Object.url);
               aws_s3_url = s3Object.url
+
               //Create a new record in the ContentGenerated table
-              return prisma.contentGenerated.create({
+              prisma.contentGenerated.create({
                 data: {
                   ...moreData,
                   audio_url: aws_s3_url,
@@ -97,13 +110,18 @@ export default async function handler(
                     connect: { id: userId }, // Assuming you have the userId
                   },
                 },
-              });
+              }).then(()=>{
+                console.log("added to database")
+              })
             })
             .catch((error: any) => {
-              console.log('Error uploading file:', error)
+              console.log('Error uploading file:', error);
+              throw error;
             })
-        }, 5000);
-
+        })
+      }).then(()=>{
+        res.status(200).send({ name: "ok" })
       })
+
   }
 }

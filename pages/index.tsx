@@ -1,13 +1,13 @@
-import type { GetServerSideProps, NextPage } from 'next'
+import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Form from '../components/Form'
 import withAuth from './hoc/withAuth'
 import { ContentData } from '../types/user'
-import { use, useEffect, useState } from 'react'
+import {useEffect, useState } from 'react'
 import { User } from '../types/user'
 import PlayerCard from '../components/Cards/PlayerCard'
+import CustomLoadingOverlay from '../components/Modals/CustomLoadingOverlay'
 
 interface HomeProps {
   userID: string,
@@ -35,6 +35,7 @@ const fetchContent = async (userID: string): Promise<ContentData[]> => {
 const Home: NextPage = () => {
   const [userID, setUserID] = useState<string>('');
   const [content, setContent] = useState<ContentData[] | null>(null);
+  const [showPreparingOverlay, setPreparingOverlay] = useState(false);
 
   useEffect(() => {
     const user: User = JSON.parse(localStorage.getItem('user')!);
@@ -58,7 +59,9 @@ const Home: NextPage = () => {
   }, [userID]);
 
 
-
+  useEffect(()=>{
+    console.log(showPreparingOverlay);
+  },[showPreparingOverlay])
 
   return (
     <div className={styles.container}>
@@ -72,20 +75,21 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a>Readitforme</a>
         </h1>
-
-        <Form />
-
+        {/** Form to Create  */}
+        <Form openOverlay={setPreparingOverlay} />
+        {/** Generated Content Items */}
         <div className='py-8'>
-          <div className='grid grid-cols-1 gap-4'>
-          {content && (
-            content.map((item,index) => (
-              <PlayerCard data = {item} key={index}/>
-            ))
-          )}
+          <div className='grid grid-cols-4 gap-4'>
+            {content && (
+              content.map((item, index) => (
+                <PlayerCard data={item} key={index} />
+              ))
+            )}
           </div>
-         
         </div>
 
+        {/** Modal for preparing  */}
+        <CustomLoadingOverlay visible={showPreparingOverlay}/>
       </main>
     </div>
   )
