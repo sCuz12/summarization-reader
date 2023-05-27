@@ -58,7 +58,7 @@ export default async function handler(
       console.log(error);
     }
 
-    const fileName = generateName();
+    const fileName = 'temp_audio_files/' + generateName();
 
     const scrapeData = await scrapeUrl(url)
     if (scrapeData) {
@@ -77,7 +77,7 @@ export default async function handler(
         let aws_s3_url = "";
         const fileUploader = new AWSFileUploader();
         const rootDirectory = path.resolve(process.cwd()); // Get the root directory of the project
-        const filePath = path.join(rootDirectory, fileName);
+        const filePath = path.join(fileName);
 
         const waitForFile = new Promise<void>((resolve) => {
           const checkFile = () => {
