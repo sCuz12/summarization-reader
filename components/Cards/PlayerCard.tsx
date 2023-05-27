@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react'
 import { FaRegPlayCircle, FaPauseCircle } from 'react-icons/fa'
 import { ContentData } from '../../types/user'
 import { Badge, Card, Group, Text, Image, Divider, Center } from '@mantine/core'
-import FullItemImageExpand from './FullItemImageExpand';
 
 type Props = {
     data: ContentData
