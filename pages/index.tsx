@@ -39,29 +39,10 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const user: User = JSON.parse(localStorage.getItem('user')!);
-
     if (user) {
       setUserID(user.id);
     }
   }, []);
-
-
-  useEffect(() => {
-    if (userID) {
-      fetchContent(userID)
-        .then((data) => {
-          setContent(data)
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-  }, [userID]);
-
-
-  useEffect(()=>{
-    console.log(showPreparingOverlay);
-  },[showPreparingOverlay])
 
   return (
     <div className={styles.container}>
@@ -77,17 +58,6 @@ const Home: NextPage = () => {
         </h1>
         {/** Form to Create  */}
         <Form openOverlay={setPreparingOverlay} />
-        {/** Generated Content Items */}
-        <div className='py-8'>
-          <div className='grid grid-cols-4 gap-4'>
-            {content && (
-              content.map((item, index) => (
-                <PlayerCard data={item} key={index} />
-              ))
-            )}
-          </div>
-        </div>
-
         {/** Modal for preparing  */}
         <CustomLoadingOverlay visible={showPreparingOverlay}/>
       </main>

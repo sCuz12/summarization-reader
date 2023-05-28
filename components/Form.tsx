@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Context } from '../context';
 import { User } from '../types/user';
-import { Alert, TextInput, Textarea } from '@mantine/core';
+import { Alert, Loader, TextInput, Textarea } from '@mantine/core';
 import SucessMessage from './MessagesBox/SucessMessage';
 import validator from 'validator';
 
@@ -14,6 +14,7 @@ const Form = ({ openOverlay }: Props) => {
     const [content, setContent] = useState<string>('');
     const [successMessage, setSuccessMessage] = useState(false);
     const [urlErrorMessage, setUrlErrorMessage] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const { state } = useContext(Context)
 
@@ -21,7 +22,9 @@ const Form = ({ openOverlay }: Props) => {
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        openOverlay(true);
+            ;
+        setSubmitLoading(true)
+        openOverlay(true)
 
         const response = await fetch('/api/generate', {
             method: 'POST',
@@ -36,8 +39,10 @@ const Form = ({ openOverlay }: Props) => {
         })
             .then((response) => {
                 console.log("Done With generation ")
+                clearForm()
                 openOverlay(false);
                 setSuccessMessage(true)
+                setSubmitLoading(false)
             }).catch((error) => {
                 console.log(error)
                 console.log(error);
@@ -48,6 +53,13 @@ const Form = ({ openOverlay }: Props) => {
         setUrl(e.target.value)
     }
 
+    //Note : Clear the data of form
+    const  clearForm = (): void => {
+        setUrl('');
+        setContent('');
+    }
+
+    //validate URL
     useEffect(() => {
         const urlPattern = /^(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?$/;
         // Check if the URL matches the desired format
@@ -69,11 +81,11 @@ const Form = ({ openOverlay }: Props) => {
                                 Not valid URL Format
                             </Alert>
                         )}
-                          <TextInput
-                            onChange={urlChangeHandler} 
+                        <TextInput
+                            onChange={urlChangeHandler}
                             label="Blog URL"
                             withAsterisk
-                            />
+                        />
                     </div>
                     <div className='flex w-full'>
                         <Textarea
@@ -89,8 +101,15 @@ const Form = ({ openOverlay }: Props) => {
 
                         </Textarea>
                     </div>
-                    <button type="submit" className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
-                        Submit
+                    <button type="submit" className="px-4 py-2 font-bold text-white bg-blue-500 rounded disabled:opacity-20 hover:bg-blue-700" disabled={submitLoading}>
+                        {submitLoading ? (
+                            <div className='flex items-center justify-center w-full'>
+                                <Loader />
+                            </div>
+
+                        ) : (
+                            <p>Submit</p>
+                        )}
                     </button>
                     {successMessage && (
                         <SucessMessage fullDiv={true} message='Summarization Succesfully Generated'>

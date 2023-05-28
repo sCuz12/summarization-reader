@@ -26,6 +26,9 @@ export default async function handler(
             source : true,
             image:true,
         },
+        orderBy: {
+            createdAt : 'desc',
+        }
       })
 
       return res.json(userContent);
