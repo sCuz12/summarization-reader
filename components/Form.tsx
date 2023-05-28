@@ -1,8 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Context } from '../context';
 import { User } from '../types/user';
-import { Textarea } from '@mantine/core';
+import { Alert, TextInput, Textarea } from '@mantine/core';
 import SucessMessage from './MessagesBox/SucessMessage';
+import validator from 'validator';
 
 type Props = {
     openOverlay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,6 +13,8 @@ const Form = ({ openOverlay }: Props) => {
     const [url, setUrl] = useState<string>('');
     const [content, setContent] = useState<string>('');
     const [successMessage, setSuccessMessage] = useState(false);
+    const [urlErrorMessage, setUrlErrorMessage] = useState(false);
+
     const { state } = useContext(Context)
 
     const user: User = state.user ?? {};
@@ -20,27 +23,40 @@ const Form = ({ openOverlay }: Props) => {
         e.preventDefault()
         openOverlay(true);
 
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    url,
-                    userId: user!.id,
-                    content,
-                })
+        const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url,
+                userId: user!.id,
+                content,
             })
-            .then((response)=>{
+        })
+            .then((response) => {
                 console.log("Done With generation ")
                 openOverlay(false);
                 setSuccessMessage(true)
-            }).catch((error)=>{
+            }).catch((error) => {
                 console.log(error)
                 console.log(error);
             });
     }
 
+    const urlChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUrl(e.target.value)
+    }
+
+    useEffect(() => {
+        const urlPattern = /^(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?$/;
+        // Check if the URL matches the desired format
+        if (!validator.isURL(url) && url !== '') {
+            setUrlErrorMessage(true);
+        } else {
+            setUrlErrorMessage(false)
+        }
+    }, [url])
 
     return (
         <div className='flex items-center justify-center w-2/4 p-8'>
@@ -48,8 +64,16 @@ const Form = ({ openOverlay }: Props) => {
             <form onSubmit={onSubmit} className='flex w-3/4 p-4 bg-white border shadow-lg rounded-xl'>
                 <div className='flex flex-col justify-between w-full gap-12'>
                     <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL</label>
-                        <input onChange={event => setUrl(event.target.value)} type="text" id="last_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Doe" required />
+                        {urlErrorMessage === true && (
+                            <Alert color="red">
+                                Not valid URL Format
+                            </Alert>
+                        )}
+                          <TextInput
+                            onChange={urlChangeHandler} 
+                            label="Blog URL"
+                            withAsterisk
+                            />
                     </div>
                     <div className='flex w-full'>
                         <Textarea

@@ -37,25 +37,32 @@ const PlayerCard = (props: Props) => {
             </div>
 
             <Card.Section>
-                {props.data.image && props.data.title && (
+                {props.data.image && props.data.title ? (
                     <Image alt={props.data.title} src={props.data.image} height={100} />
-                )}
+                ) : <Image alt='' src="https://placehold.co/600x200" />}
             </Card.Section>
+            {props.data.source && (
+                <Group position="apart" mt="md" mb="xs">
+                    <Text weight={500}>{props.data.title}</Text>
+                    <Badge color='pink' variant='light'>
+                        {props.data.source}
+                    </Badge>
+                </Group>
+            )}
 
-            <Group position="apart" mt="md" mb="xs">
-                <Text weight={500}>{props.data.title}</Text>
-                <Badge color='pink' variant='light'>
-                    {props.data.source}
-                </Badge>
-            </Group>
 
             <Group mt="md">
                 <Text size="sm" color="dimmed">
-                    <div className='flex'>
-                        <div className='flex w-3/5'>
-                            {props.data.content?.substring(0, 70) + "..."}
-                        </div>
-                        <div className='flex justify-center w-2/5'>
+                    <div className='flex w-full'>
+                        {props.data.content && (
+                            <div className='flex'>
+                                {
+                                    props.data.content?.substring(0, 70) + "..."
+                                }
+
+                            </div>
+                        )}
+                        <div className='flex items-center justify-center w-full'>
                             {isPaused ? (
                                 <FaRegPlayCircle onClick={e => setIspaused(!isPaused)} size={40} />
                             ) : (
