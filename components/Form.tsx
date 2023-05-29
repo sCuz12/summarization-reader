@@ -1,20 +1,31 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, forwardRef } from 'react'
 import { Context } from '../context';
 import { User } from '../types/user';
-import { Alert, Loader, TextInput, Textarea } from '@mantine/core';
+import { Alert, Group, Loader, Text, TextInput, Textarea } from '@mantine/core';
 import SucessMessage from './MessagesBox/SucessMessage';
 import validator from 'validator';
+import axios from 'axios';
+import { Select } from '@mantine/core';
+
 
 type Props = {
     openOverlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface VoicesResponse {
+    voice_id : string ,
+    name : string,
+    description : string,
+    preview_url : string,
+
+}
 const Form = ({ openOverlay }: Props) => {
     const [url, setUrl] = useState<string>('');
     const [content, setContent] = useState<string>('');
     const [successMessage, setSuccessMessage] = useState(false);
     const [urlErrorMessage, setUrlErrorMessage] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const [voices , setVoices] =  useState([]);
 
     const { state } = useContext(Context)
 
@@ -54,10 +65,45 @@ const Form = ({ openOverlay }: Props) => {
     }
 
     //Note : Clear the data of form
-    const  clearForm = (): void => {
+    const clearForm = (): void => {
         setUrl('');
         setContent('');
     }
+
+  
+    //Get voices from eleven las
+    useEffect(() => {
+        const getVoices = async () => {
+          try {
+            const baseUrl = "https://api.elevenlabs.io";
+            const apiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API; // Replace with your actual OpenAI API key
+            
+            const headers = {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey, // Replace with your actual x-api-key value
+            };
+      
+            const response = await axios.get(baseUrl + '/v1/voices', { headers });
+            const transformedData = response.data.voices.map((item :VoicesResponse) => ({
+                value: item.voice_id,
+                label: item.name,
+                preview_url : item.preview_url
+            }))
+
+            return transformedData;
+          } catch (error) {
+            console.error(error);
+          }
+        };
+      
+        const fetchData = async () => {
+          const voices = await getVoices();
+          console.log(voices);
+          setVoices(voices)
+        };
+      
+        fetchData();
+      }, []);
 
     //validate URL
     useEffect(() => {
@@ -69,6 +115,11 @@ const Form = ({ openOverlay }: Props) => {
             setUrlErrorMessage(false)
         }
     }, [url])
+
+    //** Handlers */
+    const handleVoiceSelect = (selectedValue) => {
+        console.log(selectedValue)
+    }
 
     return (
         <div className='flex items-center justify-center w-2/4 p-8'>
@@ -87,7 +138,7 @@ const Form = ({ openOverlay }: Props) => {
                             withAsterisk
                         />
                     </div>
-                    <div className='flex w-full'>
+                    <div className='flex flex-col w-full'>
                         <Textarea
                             placeholder=""
                             label="Post"
@@ -100,6 +151,13 @@ const Form = ({ openOverlay }: Props) => {
                         >
 
                         </Textarea>
+                        
+                        <Select
+                        label="Voice"
+                        placeholder="Pick one"
+                        data={voices}
+                        onSelect={handleVoiceSelect}
+                        />
                     </div>
                     <button type="submit" className="px-4 py-2 font-bold text-white bg-blue-500 rounded disabled:opacity-20 hover:bg-blue-700" disabled={submitLoading}>
                         {submitLoading ? (
