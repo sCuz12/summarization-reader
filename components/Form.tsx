@@ -5,7 +5,6 @@ import { Alert, Group, Loader, NativeSelect, Text, TextInput, Textarea } from '@
 import SucessMessage from './MessagesBox/SucessMessage';
 import validator from 'validator';
 import axios from 'axios';
-import { Select } from '@mantine/core';
 
 
 type Props = {
@@ -35,8 +34,8 @@ const Form = ({ openOverlay }: Props) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     
     const { state } = useContext(Context)
-
-    const user: User = state.user ?? {};
+    console.log(state.user);
+    const user : User | null = state.user ?? {} ;
 
     const REF_LINK = {
         name : "Go to generated audio's",

@@ -1559,6 +1559,11 @@
   "resolved" "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.3.tgz"
   "version" "0.16.3"
 
+"@types/validator@^13.7.17":
+  "integrity" "sha512-aqayTNmeWrZcvnG2MG9eGYI6b7S5fl+yKgPs6bAjOTwPS316R5SxBGKvtSExfyoJU7pIeHJfsHI0Ji41RVMkvQ=="
+  "resolved" "https://registry.npmjs.org/@types/validator/-/validator-13.7.17.tgz"
+  "version" "13.7.17"
+
 "@types/websocket@^1.0.3":
   "integrity" "sha512-NbsqiNX9CnEfC1Z0Vf4mE1SgAJ07JnRYcNex7AJ9zAVzmiGHmjKFEk7O4TJIsgv2B1sLEb6owKFZrACwdYngsQ=="
   "resolved" "https://registry.npmjs.org/@types/websocket/-/websocket-1.0.5.tgz"
