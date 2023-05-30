@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { FaRegPlayCircle, FaPauseCircle } from 'react-icons/fa'
+import { TiEyeOutline } from 'react-icons/ti'
 import { ContentData } from '../../types/user'
 import { Badge, Card, Group, Text, Image, Divider, Center } from '@mantine/core'
 
@@ -30,7 +31,7 @@ const PlayerCard = (props: Props) => {
 
 
     return (
-        <Card shadow={'xl'} pt={0} pb={'md'} radius={20} withBorder className='max-w-[400px] relative' >
+        <Card shadow={'xl'} pt={0} radius={20} withBorder className='max-w-[400px] relative' >
             <div>
                 <audio ref={audioRef} src={props.data.audio_url} onEnded={e => { setIspaused(true) }}>
                 </audio>
@@ -51,7 +52,7 @@ const PlayerCard = (props: Props) => {
             )}
 
 
-            <Group mt="md">
+            <Group mt="md" pb="md">
                 <Text size="sm" color="dimmed">
                     <div className='flex w-full'>
                         {props.data.content && (
@@ -73,6 +74,17 @@ const PlayerCard = (props: Props) => {
                     </div>
                 </Text>
             </Group>
+            {props.data.content_url && (
+                <>
+                    <Divider my="sm" variant="dashed"w />
+                    <div className='flex justify-center pt-4'>
+                        <a target='blank' href={props.data.content_url}>
+                            <TiEyeOutline size={30} />
+                        </a>
+                    </div>
+                </>
+            )}
+
 
         </Card>
 

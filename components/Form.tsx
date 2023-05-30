@@ -12,15 +12,15 @@ type Props = {
 }
 
 interface VoicesResponse {
-    voice_id : string ,
-    name : string,
-    preview_url : string,
+    voice_id: string,
+    name: string,
+    preview_url: string,
 }
 
 interface VoiceItem {
-    label : string,
-    value : string,
-    preview_url : string,
+    label: string,
+    value: string,
+    preview_url: string,
 }
 
 const Form = ({ openOverlay }: Props) => {
@@ -29,24 +29,26 @@ const Form = ({ openOverlay }: Props) => {
     const [successMessage, setSuccessMessage] = useState(true);
     const [urlErrorMessage, setUrlErrorMessage] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
-    const [voices , setVoices] =  useState([]);
-    const [selectedVoiceId , setSelectedVoiceId] = useState('');
+    const [voices, setVoices] = useState([]);
+    const [selectedVoiceId, setSelectedVoiceId] = useState('');
     const audioRef = useRef<HTMLAudioElement>(null);
-    
+
     const { state } = useContext(Context)
-    console.log(state.user);
-    const user : User | null = state.user ?? {} ;
+
+    
+    const user:any = state.user 
 
     const REF_LINK = {
-        name : "Go to generated audio's",
-        link : '/content'
+        name: "Go to generated audio's",
+        link: '/content'
     }
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-            ;
+
+        e.preventDefault();
         setSubmitLoading(true)
         openOverlay(true)
+
         const response = await fetch('/api/generate', {
             method: 'POST',
             headers: {
@@ -54,9 +56,9 @@ const Form = ({ openOverlay }: Props) => {
             },
             body: JSON.stringify({
                 url,
-                userId: user!.id,
+                userId: user.id,
                 content,
-                voiceId : selectedVoiceId
+                voiceId: selectedVoiceId
             })
         })
             .then((response) => {
@@ -81,39 +83,39 @@ const Form = ({ openOverlay }: Props) => {
         setContent('');
     }
 
-  
+
     //Get voices from eleven las
     useEffect(() => {
         const getVoices = async () => {
-          try {
-            const baseUrl = "https://api.elevenlabs.io";
-            const apiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API; // Replace with your actual OpenAI API key
-            
-            const headers = {
-              'Content-Type': 'application/json',
-              'x-api-key': apiKey, // Replace with your actual x-api-key value
-            };
-      
-            const response = await axios.get(baseUrl + '/v1/voices', { headers });
-            const transformedData = response.data.voices.map((item :VoicesResponse) => ({
-                value: item.voice_id,
-                label: item.name,
-                preview_url : item.preview_url
-            }))
+            try {
+                const baseUrl = "https://api.elevenlabs.io";
+                const apiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API; // Replace with your actual OpenAI API key
 
-            return transformedData;
-          } catch (error) {
-            console.error(error);
-          }
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey, // Replace with your actual x-api-key value
+                };
+
+                const response = await axios.get(baseUrl + '/v1/voices', { headers });
+                const transformedData = response.data.voices.map((item: VoicesResponse) => ({
+                    value: item.voice_id,
+                    label: item.name,
+                    preview_url: item.preview_url
+                }))
+
+                return transformedData;
+            } catch (error) {
+                console.error(error);
+            }
         };
-      
+
         const fetchData = async () => {
-          const voices = await getVoices();
-          setVoices(voices)
+            const voices = await getVoices();
+            setVoices(voices)
         };
-      
+
         fetchData();
-      }, []);
+    }, []);
 
     //validate URL
     useEffect(() => {
@@ -128,18 +130,18 @@ const Form = ({ openOverlay }: Props) => {
 
 
     //** Handlers */
-    const handleVoiceSelect = (e:any) => {
+    const handleVoiceSelect = (e: any) => {
         const voiceValue = e.currentTarget.value;
         //update selected voice
         setSelectedVoiceId(voiceValue)
         //get the whole item
-        const matchItem:any = voices.find((item:VoiceItem)=>item.value === voiceValue)
+        const matchItem: any = voices.find((item: VoiceItem) => item.value === voiceValue)
         //play 
-        if(matchItem && matchItem.preview_url){
-            audioRef.current?.setAttribute('src',matchItem.preview_url)
+        if (matchItem && matchItem.preview_url) {
+            audioRef.current?.setAttribute('src', matchItem.preview_url)
             audioRef.current?.play();
         }
-        
+
     }
 
     return (
@@ -172,12 +174,12 @@ const Form = ({ openOverlay }: Props) => {
                         >
 
                         </Textarea>
-                        
+
                         <NativeSelect
-                        label="Voice"
-                        placeholder="Pick one"
-                        data={voices}
-                        onChange={handleVoiceSelect}
+                            label="Voice"
+                            placeholder="Pick one"
+                            data={voices}
+                            onChange={handleVoiceSelect}
                         />
                     </div>
                     <button type="submit" className="px-4 py-2 font-bold text-white bg-blue-500 rounded disabled:opacity-20 hover:bg-blue-700" disabled={submitLoading}>
