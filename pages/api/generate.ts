@@ -39,7 +39,7 @@ export default async function handler(
   var aiAnswer;
 
   if (req.method = 'POST') {
-    const { url, userId, content } = req.body
+    const { url, userId, content,voiceId } = req.body
 
     console.log(content)
     try {
@@ -72,7 +72,7 @@ export default async function handler(
     }
 
     //NOTE: TextToSpeech saves the file as well
-    voice.textToSpeech(API_KEY, '21m00Tcm4TlvDq8ikWAM', fileName, aiAnswer)
+    voice.textToSpeech(API_KEY, voiceId, fileName, aiAnswer)
       .then(async (res: any) => {
         let aws_s3_url = "";
         const fileUploader = new AWSFileUploader();

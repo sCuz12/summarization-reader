@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect, forwardRef } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { Context } from '../context';
 import { User } from '../types/user';
-import { Alert, Group, Loader, Text, TextInput, Textarea } from '@mantine/core';
+import { Alert, Group, Loader, NativeSelect, Text, TextInput, Textarea } from '@mantine/core';
 import SucessMessage from './MessagesBox/SucessMessage';
 import validator from 'validator';
 import axios from 'axios';
@@ -15,10 +15,15 @@ type Props = {
 interface VoicesResponse {
     voice_id : string ,
     name : string,
-    description : string,
     preview_url : string,
-
 }
+
+interface VoiceItem {
+    label : string,
+    value : string,
+    preview_url : string,
+}
+
 const Form = ({ openOverlay }: Props) => {
     const [url, setUrl] = useState<string>('');
     const [content, setContent] = useState<string>('');
@@ -26,7 +31,9 @@ const Form = ({ openOverlay }: Props) => {
     const [urlErrorMessage, setUrlErrorMessage] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [voices , setVoices] =  useState([]);
-
+    const [selectedVoiceId , setSelectedVoiceId] = useState('');
+    const audioRef = useRef<HTMLAudioElement>(null);
+    
     const { state } = useContext(Context)
 
     const user: User = state.user ?? {};
@@ -46,6 +53,7 @@ const Form = ({ openOverlay }: Props) => {
                 url,
                 userId: user!.id,
                 content,
+                voiceId : selectedVoiceId
             })
         })
             .then((response) => {
@@ -98,7 +106,6 @@ const Form = ({ openOverlay }: Props) => {
       
         const fetchData = async () => {
           const voices = await getVoices();
-          console.log(voices);
           setVoices(voices)
         };
       
@@ -116,9 +123,20 @@ const Form = ({ openOverlay }: Props) => {
         }
     }, [url])
 
+
     //** Handlers */
-    const handleVoiceSelect = (selectedValue) => {
-        console.log(selectedValue)
+    const handleVoiceSelect = (e:any) => {
+        const voiceValue = e.currentTarget.value;
+        //update selected voice
+        setSelectedVoiceId(voiceValue)
+        //get the whole item
+        const matchItem:any = voices.find((item:VoiceItem)=>item.value === voiceValue)
+        //play 
+        if(matchItem && matchItem.preview_url){
+            audioRef.current?.setAttribute('src',matchItem.preview_url)
+            audioRef.current?.play();
+        }
+        
     }
 
     return (
@@ -152,11 +170,11 @@ const Form = ({ openOverlay }: Props) => {
 
                         </Textarea>
                         
-                        <Select
+                        <NativeSelect
                         label="Voice"
                         placeholder="Pick one"
                         data={voices}
-                        onSelect={handleVoiceSelect}
+                        onChange={handleVoiceSelect}
                         />
                     </div>
                     <button type="submit" className="px-4 py-2 font-bold text-white bg-blue-500 rounded disabled:opacity-20 hover:bg-blue-700" disabled={submitLoading}>
@@ -176,6 +194,7 @@ const Form = ({ openOverlay }: Props) => {
                     )}
 
                 </div>
+                <audio hidden ref={audioRef} controls />
             </form>
         </div>
     )
