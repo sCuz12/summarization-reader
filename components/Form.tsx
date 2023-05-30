@@ -27,7 +27,7 @@ interface VoiceItem {
 const Form = ({ openOverlay }: Props) => {
     const [url, setUrl] = useState<string>('');
     const [content, setContent] = useState<string>('');
-    const [successMessage, setSuccessMessage] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(true);
     const [urlErrorMessage, setUrlErrorMessage] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [voices , setVoices] =  useState([]);
@@ -38,34 +38,38 @@ const Form = ({ openOverlay }: Props) => {
 
     const user: User = state.user ?? {};
 
+    const REF_LINK = {
+        name : "Go to generated audio's",
+        link : '/content'
+    }
+
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
             ;
         setSubmitLoading(true)
         openOverlay(true)
-
-        const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                url,
-                userId: user!.id,
-                content,
-                voiceId : selectedVoiceId
-            })
-        })
-            .then((response) => {
-                console.log("Done With generation ")
-                clearForm()
-                openOverlay(false);
-                setSuccessMessage(true)
-                setSubmitLoading(false)
-            }).catch((error) => {
-                console.log(error)
-                console.log(error);
-            });
+        // const response = await fetch('/api/generate', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         url,
+        //         userId: user!.id,
+        //         content,
+        //         voiceId : selectedVoiceId
+        //     })
+        // })
+        //     .then((response) => {
+        //         console.log("Done With generation ")
+        //         clearForm()
+        //         openOverlay(false);
+        //         setSuccessMessage(true)
+        //         setSubmitLoading(false)
+        //     }).catch((error) => {
+        //         console.log(error)
+        //         console.log(error);
+        //     });
     }
 
     const urlChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,8 +192,7 @@ const Form = ({ openOverlay }: Props) => {
                         )}
                     </button>
                     {successMessage && (
-                        <SucessMessage fullDiv={true} message='Summarization Succesfully Generated'>
-
+                        <SucessMessage fullDiv={true} message='Summarization Succesfully Generated' refLink={REF_LINK}>
                         </SucessMessage>
                     )}
 
