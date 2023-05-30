@@ -48,28 +48,28 @@ const Form = ({ openOverlay }: Props) => {
             ;
         setSubmitLoading(true)
         openOverlay(true)
-        // const response = await fetch('/api/generate', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         url,
-        //         userId: user!.id,
-        //         content,
-        //         voiceId : selectedVoiceId
-        //     })
-        // })
-        //     .then((response) => {
-        //         console.log("Done With generation ")
-        //         clearForm()
-        //         openOverlay(false);
-        //         setSuccessMessage(true)
-        //         setSubmitLoading(false)
-        //     }).catch((error) => {
-        //         console.log(error)
-        //         console.log(error);
-        //     });
+        const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url,
+                userId: user!.id,
+                content,
+                voiceId : selectedVoiceId
+            })
+        })
+            .then((response) => {
+                console.log("Done With generation ")
+                clearForm()
+                openOverlay(false);
+                setSuccessMessage(true)
+                setSubmitLoading(false)
+            }).catch((error) => {
+                console.log(error)
+                console.log(error);
+            });
     }
 
     const urlChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
